@@ -2,12 +2,15 @@ import { Product } from "../store";
 
 export const fetchProducts = async (): Promise<Product[]> => {
     try {
-        const response = await fetch('https://your-api-endpoint.amazonaws.com/products');
+        const response = await fetch('https://uj4l29f8yc.execute-api.us-east-1.amazonaws.com/dev/products');
         if (!response.ok) {
             throw new Error('Error fetching products');
         }
         const data = await response.json();
-        return data;
+        if(!data.products) {
+            throw new Error('Error fetching products');
+        }
+        return data.products;
     } catch (error) {
         console.error("Error fetching products:", error);
         return [];
