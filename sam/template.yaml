@@ -11,7 +11,7 @@ Resources:
         AllowMethods: "'GET, POST, OPTIONS'"
         AllowHeaders: "'Content-Type, X-Amz-Date, Authorization, X-Api-Key, X-Requested-With'"
         AllowOrigin: "'http://localhost:5173'"
-        MaxAge: 600
+        MaxAge: '600'
         AllowCredentials: true
 
   GetProductsFunction:

@@ -23,3 +23,4 @@ dist-ssr
 *.sln
 *.sw?
 .sam/.aws-sam
+.sam/samconfig.toml
