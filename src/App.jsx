@@ -2,13 +2,13 @@ import { useAtom } from "jotai";
 import MyCart from "./components/cart/MyCart";
 import MyHeader from "./components/myHeader";
 import MyProducts from "./components/products/MyProducts";
+import { checkout } from "./utils/api/products";
 import { cartItemsAtom } from "./utils/store";
 
 function App() {
   const [cartItems] = useAtom(cartItemsAtom);
   const handleCheckout = () => {
-    console.log("Proceeding to checkout...");
-    console.log("cartItems", cartItems);
+    checkout(cartItems)
   };
 
   return (

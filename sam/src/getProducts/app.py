@@ -22,7 +22,12 @@ def lambda_handler(event, context):
 
         products = [product for product in products if product.get('stock', 0) > 0]
 
-        products = [{k: decimal_to_float(v) if isinstance(v, Decimal) else v for k, v in product.items()} for product in products]
+        products = [
+            {k: decimal_to_float(v) if isinstance(v, Decimal) else v for k, v in product.items()}
+            for product in products
+        ]
+
+        products = sorted(products, key=lambda x: int(x.get('id')))
 
         return {
             'statusCode': 200,

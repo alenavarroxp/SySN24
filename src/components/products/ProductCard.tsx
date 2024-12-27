@@ -8,12 +8,11 @@ interface ProductCardProps {
     name: string;
     price: number;
   };
-  index: number;
   isInCart: boolean;
-  toggleProduct: (index: number) => void;
+  toggleProduct: (id: string) => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, index, isInCart, toggleProduct }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, isInCart, toggleProduct }) => {
   return (
     <div className="flex items-center rounded-lg shadow-lg bg-white p-4 transition-transform transform hover:scale-105">
       <div className="flex-1">
@@ -24,7 +23,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, index, isInCart, tog
         className={`mr-4 px-4 py-2 rounded text-white flex items-center ${
           isInCart ? "bg-red-500 hover:bg-red-600" : "bg-blue-500 hover:bg-blue-600"
         }`}
-        onClick={() => toggleProduct(index)}
+        onClick={() => toggleProduct(product.id)}
       >
         {isInCart ? (
           <>

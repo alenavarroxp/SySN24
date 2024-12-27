@@ -35,3 +35,27 @@ export const insertProduct = async (): Promise<Product> => {
         throw error;
     }
 };
+
+export const checkout = async (cartItems: string[]) => {
+    try {
+      const numericCartItems = cartItems.map((item) => Number(item));
+      console.log('Submitting cart:', JSON.stringify({ items: numericCartItems }));
+  
+      const response = await fetch('https://example.com/api/cart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ items: numericCartItems }),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      console.log('Server response:', data);
+    } catch (error) {
+      console.error('Error submitting cart:', error);
+    }
+  };

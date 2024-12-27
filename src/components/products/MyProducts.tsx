@@ -17,24 +17,28 @@ const MyProducts: React.FC = () => {
     loadProducts();
   }, [setProducts]);
 
-  const toggleProduct = (index: number) => {
+  const toggleProduct = (id: string) => {
     setCartItems((prev) =>
-      prev.includes(index)
-        ? prev.filter((item) => item !== index)
-        : [...prev, index]
+      prev.includes(id)
+        ? prev.filter((item) => item !== id)
+        : [...prev, id]
     );
   };
 
-  if (products.length == 0) return <div className='w-full p-6 justify-center items-center flex text-white text-2xl'>Loading...</div>;
+  if (products.length === 0)
+    return (
+      <div className="w-full p-6 justify-center items-center flex text-white text-2xl">
+        Loading...
+      </div>
+    );
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-      {products.map((product, index) => (
+      {products.map((product) => (
         <ProductCard
           key={product.id}
           product={product}
-          index={index}
-          isInCart={cartItems.includes(index)}
+          isInCart={cartItems.includes(product.id)}
           toggleProduct={toggleProduct}
         />
       ))}
