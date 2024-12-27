@@ -1,10 +1,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@layer base {
-  @font-face {
-    font-family: "sans-serif";
-    src: url("/fonts/sans-serif.woff2") format("woff2");
-  }
-}
