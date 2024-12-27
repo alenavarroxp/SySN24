@@ -22,5 +22,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-.sam/.aws-sam
-.sam/samconfig.toml
+sam/.aws-sam
+sam/samconfig.toml
