@@ -5,7 +5,7 @@ Description: SAM Template for SySN24
 Parameters:
   RoleARN:
     Type: String
-    Default: arn:aws:iam::675778140370:role/LabRole
+    Default: arn:aws:iam::208497263506:role/LabRole
     Description: ARN del rol que usarán las funciones Lambda
 
 Resources:
@@ -59,6 +59,28 @@ Resources:
           Type: Api
           Properties:
             Path: /products
+            Method: POST
+            RestApiId:
+              Ref: ApiGatewayApi
+
+  BuyProductsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: postBuy.app.lambda_handler
+      Runtime: python3.10
+      CodeUri: src
+      Role: !Ref RoleARN
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: Products
+      Environment:
+        Variables:
+          TABLE_NAME: Products
+      Events:
+        InsertProductsAPI:
+          Type: Api
+          Properties:
+            Path: /buy
             Method: POST
             RestApiId:
               Ref: ApiGatewayApi
