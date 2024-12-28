@@ -2,6 +2,12 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: SAM Template for SySN24
 
+Parameters:
+  RoleARN:
+    Type: String
+    Default: arn:aws:iam::675778140370:role/LabRole
+    Description: ARN del rol que usarán las funciones Lambda
+
 Resources:
   ApiGatewayApi:
     Type: AWS::Serverless::Api
@@ -10,9 +16,8 @@ Resources:
       Cors:
         AllowMethods: "'*'"
         AllowHeaders: "'Content-Type, X-Amz-Date, Authorization, X-Api-Key, X-Requested-With'"
-        AllowOrigin: "'http://localhost:5173'"
+        AllowOrigin: "'*'"
         MaxAge: "'600'"
-        AllowCredentials: true
 
   GetProductsFunction:
     Type: AWS::Serverless::Function
@@ -20,7 +25,7 @@ Resources:
       Handler: getProducts.app.lambda_handler
       Runtime: python3.10
       CodeUri: src
-      Role: arn:aws:iam::675778140370:role/LabRole
+      Role: !Ref RoleARN
       Policies:
         - DynamoDBReadPolicy:
             TableName: Products
@@ -42,7 +47,7 @@ Resources:
       Handler: insertProducts.app.lambda_handler
       Runtime: python3.10
       CodeUri: src
-      Role: arn:aws:iam::675778140370:role/LabRole
+      Role: !Ref RoleARN
       Policies:
         - DynamoDBReadPolicy:
             TableName: Products
