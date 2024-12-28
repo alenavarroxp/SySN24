@@ -22,9 +22,9 @@ Resources:
   GetProductsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: getProducts.app.lambda_handler
+      Handler: app.lambda_handler
       Runtime: python3.10
-      CodeUri: src
+      CodeUri: src/getProducts
       Role: !Ref RoleARN
       Policies:
         - DynamoDBReadPolicy:
@@ -44,9 +44,9 @@ Resources:
   InsertProductsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: insertProducts.app.lambda_handler
+      Handler: app.lambda_handler
       Runtime: python3.10
-      CodeUri: src
+      CodeUri: src/insertProducts
       Role: !Ref RoleARN
       Policies:
         - DynamoDBReadPolicy:
@@ -66,9 +66,9 @@ Resources:
   BuyProductsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: postBuy.app.lambda_handler
+      Handler: app.lambda_handler
       Runtime: python3.10
-      CodeUri: src
+      CodeUri: src/postBuy
       Role: !Ref RoleARN
       Policies:
         - DynamoDBReadPolicy:
@@ -80,7 +80,7 @@ Resources:
           TABLE_NAME: Products
           PDF_BUCKET: !Ref PDFStorageBucket
       Events:
-        InsertProductsAPI:
+        BuyProductsAPI:
           Type: Api
           Properties:
             Path: /buy
