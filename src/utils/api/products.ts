@@ -2,7 +2,7 @@ import { Product } from "../store";
 
 export const fetchProducts = async (): Promise<Product[]> => {
     try {
-        const response = await fetch('https://o4ly3na525.execute-api.us-east-1.amazonaws.com/Prod/products');
+        const response = await fetch('https://70hzafkbl4.execute-api.us-east-1.amazonaws.com/Prod/products');
         if (!response.ok) {
             throw new Error('Error fetching products');
         }
@@ -19,7 +19,7 @@ export const fetchProducts = async (): Promise<Product[]> => {
 
 export const insertProduct = async (): Promise<Product> => {
     try {
-        const response = await fetch('https://o4ly3na525.execute-api.us-east-1.amazonaws.com/Prod/products', {
+        const response = await fetch('https://70hzafkbl4.execute-api.us-east-1.amazonaws.com/Prod/products', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

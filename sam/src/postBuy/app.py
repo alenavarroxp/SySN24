@@ -3,7 +3,8 @@ from decimal import Decimal
 import boto3
 from botocore.exceptions import ClientError
 from fpdf import FPDF
-import io
+import tempfile
+import os
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('Products')
@@ -41,19 +42,24 @@ def generate_pdf(purchase_details):
     pdf.ln(10)
     pdf.cell(200, 10, txt=f"Total Purchase: {total}", ln=True, align='R')
 
-    pdf_output = io.BytesIO()
-    pdf.output(pdf_output)
-    pdf_output.seek(0)
-
-    return pdf_output
-
-def upload_pdf_to_s3(pdf_output, bucket_name, file_name):
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
     try:
-        s3.put_object(Bucket=bucket_name, Key=file_name, Body=pdf_output, ContentType='application/pdf')
+        pdf.output(temp_file.name)
+        return temp_file.name
+    finally:
+        temp_file.close()
+
+def upload_pdf_to_s3(pdf_path, bucket_name, file_name):
+    try:
+        s3.upload_file(pdf_path, bucket_name, file_name, ExtraArgs={"ContentType": "application/pdf"})
         return True
     except ClientError as e:
-        print(f"Error uploading PDF to S3: {e}")
         return False
+    except Exception as e:
+        return False
+    finally:
+        if os.path.exists(pdf_path):
+            os.remove(pdf_path)
 
 def lambda_handler(event, context):
     try:
@@ -109,11 +115,11 @@ def lambda_handler(event, context):
                 else:
                     pass
 
-        pdf_output = generate_pdf(purchase_details)
+        pdf_path = generate_pdf(purchase_details)
 
         bucket_name = "sy24-pdf-storage"
         file_name = f"purchase_{context.aws_request_id}.pdf"
-        upload_success = upload_pdf_to_s3(pdf_output, bucket_name, file_name)
+        upload_success = upload_pdf_to_s3(pdf_path, bucket_name, file_name)
 
         if not upload_success:
             return {
