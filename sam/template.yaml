@@ -73,9 +73,12 @@ Resources:
       Policies:
         - DynamoDBReadPolicy:
             TableName: Products
+        - S3WritePolicy:
+            BucketName: !Ref PDFStorageBucket
       Environment:
         Variables:
           TABLE_NAME: Products
+          PDF_BUCKET: !Ref PDFStorageBucket
       Events:
         InsertProductsAPI:
           Type: Api
@@ -96,3 +99,9 @@ Resources:
         - AttributeName: id
           KeyType: HASH
       BillingMode: PAY_PER_REQUEST
+
+  PDFStorageBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: sy24-pdf-storage
+      AccessControl: Private
