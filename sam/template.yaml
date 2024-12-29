@@ -73,12 +73,15 @@ Resources:
       Policies:
         - DynamoDBReadPolicy:
             TableName: Products
+        - DynamoDBWritePolicy:
+            TableName: Orders
         - S3WritePolicy:
             BucketName: !Ref PDFStorageBucket
       Environment:
         Variables:
           TABLE_NAME: Products
           PDF_BUCKET: !Ref PDFStorageBucket
+          ORDERS_TABLE_NAME: Orders 
       Events:
         BuyProductsAPI:
           Type: Api
@@ -92,6 +95,18 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: Products
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+
+  OrdersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Orders
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
