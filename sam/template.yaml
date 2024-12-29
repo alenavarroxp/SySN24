@@ -91,6 +91,37 @@ Resources:
             RestApiId:
               Ref: ApiGatewayApi
 
+  SendTicketFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/sendTicket/app.lambda_handler
+      Runtime: python3.10
+      CodeUri: .
+      Role: !Ref RoleARN
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Ref PDFStorageBucket
+        - SNSPublishMessagePolicy:
+            TopicName: PDFTopic
+        - Statement:
+            Effect: Allow
+            Action: s3:PutBucketNotification
+            Resource: !Sub "arn:aws:s3:::${PDFStorageBucket}"
+      Environment:
+        Variables:
+          SNS_TOPIC_ARN: !Ref PDFTopic
+      Events:
+        S3Trigger:
+          Type: S3
+          Properties:
+            Bucket: !Ref PDFStorageBucket
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: .pdf
+
   ProductsTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -120,3 +151,8 @@ Resources:
     Properties:
       BucketName: sy24-pdf-storage
       AccessControl: Private
+
+  PDFTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: PDFTopic
