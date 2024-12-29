@@ -7,6 +7,9 @@ Parameters:
     Type: String
     Default: arn:aws:iam::208497263506:role/LabRole
     Description: ARN del rol que usarán las funciones Lambda
+  EmailSubscription:
+    Type: String
+    Description: "Email address to subscribe to SNS topic"
 
 Resources:
   ApiGatewayApi:
@@ -119,6 +122,28 @@ Resources:
                   - Name: suffix
                     Value: .pdf
 
+  StockAlertFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/stockAlert/app.lambda_handler
+      Runtime: python3.10
+      CodeUri: .
+      Role: !Ref RoleARN
+      Policies:
+        - SNSPublishMessagePolicy:
+            TopicName: StockAlertTopic
+      Environment:
+        Variables:
+          SNS_TOPIC_ARN: !Ref StockAlertTopic
+      Events:
+        DynamoDBTrigger:
+          Type: DynamoDB
+          Properties:
+            Stream: !GetAtt ProductsTable.StreamArn
+            StartingPosition: LATEST
+            BatchSize: 5
+
+
   ProductsTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -130,6 +155,8 @@ Resources:
         - AttributeName: id
           KeyType: HASH
       BillingMode: PAY_PER_REQUEST
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
 
   OrdersTable:
     Type: AWS::DynamoDB::Table
@@ -153,3 +180,29 @@ Resources:
     Type: AWS::SNS::Topic
     Properties:
       TopicName: PDFTopic
+      
+  StockAlertTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: StockAlertTopic
+
+  PDFSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Endpoint: !Ref EmailSubscription
+      Protocol: email
+      TopicArn: !Ref 'PDFTopic'
+
+  StockAlertSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Endpoint: !Ref EmailSubscription
+      Protocol: email
+      TopicArn: !Ref 'StockAlertTopic'
+
+Outputs:
+  ApiGatewayApiUrl:
+    Description: "URL of the API Gateway"
+    Value: !Sub "https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+
+
