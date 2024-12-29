@@ -91,6 +91,28 @@ Resources:
             RestApiId:
               Ref: ApiGatewayApi
 
+  GetTicketFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/getTicket/app.lambda_handler
+      Runtime: python3.10
+      CodeUri: .
+      Role: !Ref RoleARN
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Ref PDFStorageBucket
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref PDFStorageBucket
+      Events:
+        GetTicketAPI:
+          Type: Api
+          Properties:
+            Path: /ticket/{proxy+}
+            Method: GET
+            RestApiId:
+              Ref: ApiGatewayApi
+
   SendTicketFunction:
     Type: AWS::Serverless::Function
     Properties:
