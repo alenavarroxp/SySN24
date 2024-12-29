@@ -38,8 +38,7 @@ Resources:
           Properties:
             Path: /products
             Method: GET
-            RestApiId:
-              Ref: ApiGatewayApi
+            RestApiId: !Ref ApiGatewayApi
 
   InsertProductsFunction:
     Type: AWS::Serverless::Function
@@ -60,8 +59,7 @@ Resources:
           Properties:
             Path: /products
             Method: POST
-            RestApiId:
-              Ref: ApiGatewayApi
+            RestApiId: !Ref ApiGatewayApi
 
   BuyProductsFunction:
     Type: AWS::Serverless::Function
@@ -81,37 +79,14 @@ Resources:
         Variables:
           TABLE_NAME: Products
           PDF_BUCKET: !Ref PDFStorageBucket
-          ORDERS_TABLE_NAME: Orders 
+          ORDERS_TABLE_NAME: Orders
       Events:
         BuyProductsAPI:
           Type: Api
           Properties:
             Path: /buy
             Method: POST
-            RestApiId:
-              Ref: ApiGatewayApi
-
-  GetTicketFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: src/getTicket/app.lambda_handler
-      Runtime: python3.10
-      CodeUri: .
-      Role: !Ref RoleARN
-      Policies:
-        - S3ReadPolicy:
-            BucketName: !Ref PDFStorageBucket
-      Environment:
-        Variables:
-          BUCKET_NAME: !Ref PDFStorageBucket
-      Events:
-        GetTicketAPI:
-          Type: Api
-          Properties:
-            Path: /ticket/{proxy+}
-            Method: GET
-            RestApiId:
-              Ref: ApiGatewayApi
+            RestApiId: !Ref ApiGatewayApi
 
   SendTicketFunction:
     Type: AWS::Serverless::Function
