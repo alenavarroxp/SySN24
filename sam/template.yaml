@@ -10,6 +10,10 @@ Parameters:
   EmailSubscription:
     Type: String
     Description: "Email address to subscribe to SNS topic"
+  GitHubOauthToken:
+    Type: String
+    Description: "GitHub OAuth token to access the repository"
+    Default: "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"
 
 Resources:
   ApiGatewayApi:
@@ -200,9 +204,49 @@ Resources:
       Protocol: email
       TopicArn: !Ref 'StockAlertTopic'
 
+  AmplifyApp:
+    Type: AWS::Amplify::App
+    Properties:
+      Name: "SySN2425AmplifyApp"
+      Repository: "https://github.com/alenavarroxp/SySN24"
+      OauthToken: !Ref GitHubOauthToken
+      IAMRole: !Ref RoleARN
+      BuildSpec: |
+        version: 1.0
+        applications:
+          - appRoot: .
+            frontend:
+              framework: React
+
+  AmplifyBranch:
+    Type: AWS::Amplify::Branch
+    Properties:
+      AppId: !GetAtt AmplifyApp.AppId
+      BranchName: "main"  # Cambia a la rama que quieres desplegar
+      EnableAutoBuild: true
+      BuildSpec: |
+        version: 1.0
+        frontend:
+          phases:
+            preBuild:
+              commands:
+                - npm install
+            build:
+              commands:
+                - npm run build
+          artifacts:
+            baseDirectory: build
+            files:
+              - '**/*'
+          cache:
+            paths:
+              - node_modules/**/*          
+      
 Outputs:
   ApiGatewayApiUrl:
     Description: "URL of the API Gateway"
     Value: !Sub "https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+
+
 
 
