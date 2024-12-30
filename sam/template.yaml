@@ -12,8 +12,8 @@ Parameters:
     Description: "Email address to subscribe to SNS topic"
   GitHubOauthToken:
     Type: String
-    Description: "GitHub OAuth token to access the repository"
-    Default: "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"
+    Description: "GitHub OAuth token to access the repository. Important! The token is in the documentation."
+    Default: "ghp_wcs********"
 
 Resources:
   ApiGatewayApi:
@@ -210,13 +210,15 @@ Resources:
       Name: "SySN2425AmplifyApp"
       Repository: "https://github.com/alenavarroxp/SySN24"
       OauthToken: !Ref GitHubOauthToken
-      IAMRole: !Ref RoleARN
       BuildSpec: |
         version: 1.0
         applications:
           - appRoot: .
             frontend:
               framework: React
+      EnvironmentVariables:
+        - Name: VITE_API_GATEWAY_URL
+          Value: !Sub "https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
 
   AmplifyBranch:
     Type: AWS::Amplify::Branch
@@ -235,7 +237,7 @@ Resources:
               commands:
                 - npm run build
           artifacts:
-            baseDirectory: build
+            baseDirectory: dist
             files:
               - '**/*'
           cache:
