@@ -208,31 +208,16 @@ Resources:
     Type: AWS::Amplify::App
     Properties:
       Name: "SySN2425AmplifyApp"
+      Description: "Amplify App for SySN24"
       Repository: "https://github.com/alenavarroxp/SySN24"
       OauthToken: !Ref GitHubOauthToken
-      BuildSpec: |
-        version: 1.0
-        applications:
-          - appRoot: .
-            frontend:
-              framework: React
-      EnvironmentVariables:
-        - Name: VITE_API_GATEWAY_URL
-          Value: !Sub "https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
-
-  AmplifyBranch:
-    Type: AWS::Amplify::Branch
-    Properties:
-      AppId: !GetAtt AmplifyApp.AppId
-      BranchName: "main"  # Cambia a la rama que quieres desplegar
-      EnableAutoBuild: true
       BuildSpec: |
         version: 1.0
         frontend:
           phases:
             preBuild:
               commands:
-                - npm install
+               - npm ci
             build:
               commands:
                 - npm run build
@@ -242,12 +227,35 @@ Resources:
               - '**/*'
           cache:
             paths:
-              - node_modules/**/*          
+              - node_modules/**/*
+        
+      EnvironmentVariables:
+        - Name: VITE_API_GATEWAY_URL
+          Value: !Sub "https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+
+  AmplifyBranch:
+    Type: AWS::Amplify::Branch
+    Properties:
+      AppId: !GetAtt AmplifyApp.AppId
+      BranchName: "main"
+      Description: "Main branch"
+      EnableAutoBuild: true
+              
       
 Outputs:
   ApiGatewayApiUrl:
     Description: "URL of the API Gateway"
     Value: !Sub "https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+
+  DefaultDomain:
+    Value: !GetAtt AmplifyApp.DefaultDomain
+
+  MasterBranchUrl:
+    Value: !Join [ ".", [ !GetAtt AmplifyBranch.BranchName, !GetAtt AmplifyApp.DefaultDomain ]]
+  
+  AmplifyAppId:
+    Description: "App ID del Amplify App"
+    Value: !GetAtt AmplifyApp.AppId
 
 
 

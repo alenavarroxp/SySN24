@@ -43,7 +43,7 @@ def lambda_handler(event, context):
                 'id': '6',
                 'name': '4K TV',
                 'price': Decimal('899.99'),
-                'stock': 20
+                'stock': 1
             },
             {
                 'id': '7',
@@ -61,7 +61,7 @@ def lambda_handler(event, context):
                 'id': '9',
                 'name': 'Digital Camera',
                 'price': Decimal('649.99'),
-                'stock': 15
+                'stock': 11
             },
             {
                 'id': '10',

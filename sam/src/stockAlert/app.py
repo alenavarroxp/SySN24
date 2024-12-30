@@ -10,11 +10,10 @@ SNS_TOPIC_ARN = os.environ['SNS_TOPIC_ARN']
 def lambda_handler(event, context):
     for record in event['Records']:
         if record['eventName'] == 'MODIFY':
-            old_stock = int(record['dynamodb']['OldImage']['stock']['N'])
             new_stock = int(record['dynamodb']['NewImage']['stock']['N'])
             product_name = record['dynamodb']['NewImage']['name']['S']
             
-            if old_stock >= 10 and new_stock < 10:
+            if new_stock <= 10:
                 message = (
                     f"⚠️ ALERTA DE STOCK BAJO ⚠️\n\n"
                     f"📦 Producto: {product_name}\n"
